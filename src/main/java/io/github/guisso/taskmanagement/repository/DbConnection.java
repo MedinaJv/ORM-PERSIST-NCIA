@@ -1,0 +1,165 @@
+/*
+ * CC BY-NC-SA 4.0
+ *
+ * Copyright 2022 Luis Guisso &lt;luis dot guisso at ifnmg dot edu dot br&gt;.
+ *
+ * Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+ *
+ * You are free to:
+ *   Share - copy and redistribute the material in any medium or format
+ *   Adapt - remix, transform, and build upon the material
+ *
+ * Under the following terms:
+ *   Attribution - You must give appropriate credit, provide 
+ *   a link to the license, and indicate if changes were made.
+ *   You may do so in any reasonable manner, but not in any 
+ *   way that suggests the licensor endorses you or your use.
+ *   NonCommercial - You may not use the material for commercial purposes.
+ *   ShareAlike - If you remix, transform, or build upon the 
+ *   material, you must distribute your contributions under 
+ *   the same license as the original.
+ *   No additional restrictions - You may not apply legal 
+ *   terms or technological measures that legally restrict 
+ *   others from doing anything the license permits.
+ *
+ * Notices:
+ *   You do not have to comply with the license for elements 
+ *   of the material in the public domain or where your use 
+ *   is permitted by an applicable exception or limitation.
+ *   No warranties are given. The license may not give you 
+ *   all of the permissions necessary for your intended use. 
+ *   For example, other rights such as publicity, privacy, 
+ *   or moral rights may limit how you use the material.
+ */
+package io.github.guisso.taskmanagement.repository;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Class DbConnection
+ *
+ * @author Luis Guisso &lt;luis dot guisso at ifnmg dot edu dot br&gt;
+ * @version 0.2, 2024-08-29
+ */
+public class DbConnection {
+
+    // Retains the established connection to the database during system operation
+    private static Connection connection;
+
+    /**
+     * URL database connection (protocol/sgbd/ip/port/database/parameters)
+     */
+    private static String URL;
+
+    // Database user
+    private static String USER;
+
+    // Database password
+    private static String PASSWORD;
+
+    // Static initialization block
+    static {
+        // Default configuration for local server
+        URL = "jdbc:mysql://127.0.0.1:3306/" + Dao.DB
+                + "?useUnicode=true"
+                + "&useJDBCCompliantTimezoneShift=true"
+                + "&serverTimezone=UTC"
+                + "&autoReconnect=true";
+        USER = "root";
+        PASSWORD = "";
+    }
+
+    /**
+     * Establishes and generates database connection retention
+     *
+     * @return Database connection
+     */
+    public static Connection getConnection() {
+
+        // If there is no connection established...
+        if (connection == null) {
+            // ... try ...
+            try {
+                System.out.println(">> New database connection");
+                // ... establish and retain the connection 
+                //     from the provided URL, username, and password
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            } catch (SQLException ex) {
+                // Log failure
+                Logger.getLogger(DbConnection.class.getName()).log(Level.SEVERE, "System stopped because there is no RDBMS connection", ex);
+                System.exit(-1);
+            }
+        }
+
+        // Returns the established connection
+        return connection;
+    }
+
+    /**
+     * Gets the database URL
+     *
+     * @return URL of the database
+     */
+    public static String getUrl() {
+        return URL;
+    }
+
+    /**
+     * Sets the database URL
+     *
+     * @param url New URL for the database
+     */
+    public static void setUrl(String url) {
+        URL = url;
+    }
+
+    /**
+     * Gets the database user
+     *
+     * @return User of the database
+     */
+    public static String getUser() {
+        return USER;
+    }
+
+    /**
+     * Sets the database user
+     *
+     * @param user New user for the database
+     */
+    public static void setUser(String user) {
+        USER = user;
+    }
+
+    /**
+     * Gets the database password
+     *
+     * @return Password of the database
+     */
+    public static String getPassword() {
+        return PASSWORD;
+    }
+
+    /**
+     * Sets the database password
+     *
+     * @param password New password for the database
+     */
+    public static void setPassword(String password) {
+        PASSWORD = password;
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Private constructor">
+    /*
+    * Private constructor to force access to the connection by the
+    * static member getConnection() without requiring the generation of
+    * new objects DbConnection
+     */
+    private DbConnection() {
+    }
+    //</editor-fold>
+}
